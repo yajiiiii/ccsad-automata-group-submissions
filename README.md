@@ -4,7 +4,7 @@
 
 Branches:
 - `group-1` -
-- `group-2` -
+- `Group Two AURA` -
 - `group-3` -
 - `group-4` -
 - `group-5` -
