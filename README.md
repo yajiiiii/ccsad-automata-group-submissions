@@ -2,7 +2,7 @@
 
 This repository uses one branch per group submission.
 
-Branches:
+Branches://Rename group branches according to your groupname 
 - `group-1`
 - `group-2`
 - `group-3`
