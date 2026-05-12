@@ -1,6 +1,6 @@
 # CCSAD Automata Group Submissions
 
-This repository uses one branch per group submission.
+// Rename the current branches according to your group name
 
 Branches:
 - `group-1`
