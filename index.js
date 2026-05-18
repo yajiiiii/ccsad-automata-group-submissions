@@ -98,7 +98,8 @@ const STUDIES = {
             </div>
         `,
         solve: function () {
-            const input = document.getElementById('pal-input').value;
+            const raw = document.getElementById('pal-input').value;
+            const input = raw.replace(/[^a-z0-9]/gi, '').toUpperCase();
             const resultArea = document.getElementById('pal-result');
             if (!input) { resultArea.innerHTML = '<p class="result-error">ERROR: NULL_INPUT</p>'; return; }
 
@@ -118,7 +119,7 @@ const STUDIES = {
             }
 
             let out = isPalindrome ? `<p class="result-success">STATUS: SUCCESS [PALINDROME]</p>` : `<p class="result-error">STATUS: FAILURE [NON_PALINDROME]</p>`;
-            out += `<p class="result-info">Sequence: ${input}</p>`;
+            out += `<p class="result-info">Sequence: ${raw}</p>`;
             resultArea.innerHTML = out;
         }
     },
