@@ -9,7 +9,7 @@
   --color-text-muted: #64748b;
   --color-border: rgba(226, 232, 240, 0.8);
   --color-white: #ffffff;
-  
+
   /* === Spacing Scale (8px base) === */
   --s1: 4px;
   --s2: 8px;
@@ -33,12 +33,15 @@
   --radius-md: 12px;
   --radius-lg: 24px;
   --shadow-soft: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  --shadow-md:
+    0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
   --glass: blur(12px) saturate(180%);
 }
 
 /* Global Reset */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -66,8 +69,14 @@ body {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Page 1: Intro */
@@ -352,7 +361,7 @@ body {
 }
 
 .result-box::before {
-  content: '';
+  content: "";
   position: absolute;
   left: 0;
   top: 0;
@@ -363,8 +372,14 @@ body {
 
 /* Animations & Feedback */
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .result-appear {
@@ -398,7 +413,7 @@ body {
   body {
     font-size: 16px;
   }
-  
+
   .split-layout {
     grid-template-columns: 1fr;
     grid-template-rows: auto 1fr;
@@ -437,9 +452,8 @@ body {
   .page--home {
     height: auto;
   }
-  
+
   .intro__title {
     font-size: 2.25rem;
   }
 }
-

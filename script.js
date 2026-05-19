@@ -87,9 +87,9 @@ const topicConfig = {
   collatz: {
     title: "Collatz Sequence",
     description:
-      "Generates the Collatz sequence from a starting positive integer. If even → divide by 2; if odd → multiply by 3 and add 1. Stops at 1.",
+      "Generates the Collatz sequence from a starting positive odd integer. If even → divide by 2; if odd → multiply by 3 and add 1. Stops at 1.",
     inputHTML: `
-      <input id="inp1" class="input-field" type="number" placeholder="Enter a positive integer..." />
+      <input id="inp1" class="input-field" type="number" placeholder="Enter a positive odd integer..." />
       <span id="errMsg" class="error-msg"></span>
       <button id="computeBtn" class="btn btn--compute">Generate</button>
     `,
@@ -184,51 +184,83 @@ function runCompute(topicId) {
 
 // Section 6: formatResult() — Output Formatting
 function formatResult(topicId, res) {
+  const divider = "---------------------------------";
+
   switch (topicId) {
     case "palindrome":
       return (
-        `Normalized String : ${res.normalized}\n` +
-        `Length            : ${res.length}\n\n` +
-        (res.isPalindrome
-          ? "✅ The string is a palindrome."
-          : "❌ The string is NOT a palindrome.")
+        `${divider}\n` +
+        `STRING RECORDED : "${res.str}"\n` +
+        `LENGTH          : ${res.length}\n` +
+        `${divider}\n` +
+        `RESULT          : ${res.isPalindrome ? "PALINDROME" : "NOT A PALINDROME"}\n` +
+        `${divider}`
       );
 
     case "division":
       return (
-        `SOLUTION:\n` +
-        `---------------------------------\n` +
-        `${res.m} = ${res.n}(${res.q}) + ${res.r}\n\n` +
-        `Dividend  : ${res.m}\n` +
-        `Divisor   : ${res.n}\n` +
-        `Quotient  : ${res.q}\n` +
-        `Remainder : ${res.r}\n` +
-        `---------------------------------`
+        `${divider}\n` +
+        `EQUATION  : ${res.m} = ${res.n}(${res.q}) + ${res.r}\n` +
+        `${divider}\n` +
+        `DIVIDEND  : ${res.m}\n` +
+        `DIVISOR   : ${res.n}\n` +
+        `QUOTIENT  : ${res.q}\n` +
+        `REMAINDER : ${res.r}\n` +
+        `${divider}`
       );
 
     case "euclidean":
       return (
-        `SOLUTION:\n` +
-        `---------------------------------\n` +
+        `${divider}\n` +
+        `ITERATION LOG:\n` +
         res.steps.join("\n") +
         "\n" +
-        `---------------------------------\n` +
-        `The integers are ${res.originalM} and ${res.originalN}\n` +
-        `GCD of ${res.originalM} and ${res.originalN} = ${res.gcd}\n` +
-        `LCM of ${res.originalM} and ${res.originalN} = ${res.lcm}`
+        `${divider}\n` +
+        `INTEGERS  : ${res.originalM}, ${res.originalN}\n` +
+        `GCD       : ${res.gcd}\n` +
+        `LCM       : ${res.lcm}\n` +
+        `${divider}`
       );
 
     case "collatz":
-      return `The Collatz sequence are:\n${res.sequence.join(", ")}`;
+      return (
+        `${divider}\n` +
+        `The Collatz sequence are:\n` +
+        `${res.sequence.join(", ")}\n` +
+        `${divider}\n` +
+        `TOTAL STEPS : ${res.sequence.length}\n` +
+        `${divider}`
+      );
 
     case "fibonacci":
-      return `The Fibonacci Numbers are:\n${res.sequence.join(", ")}`;
+      return (
+        `${divider}\n` +
+        `FIBONACCI SEQUENCE:\n` +
+        `${res.sequence.join(", ")}\n` +
+        `${divider}\n` +
+        `TERMS GENERATED : ${res.sequence.length}\n` +
+        `${divider}`
+      );
 
     case "tribonacci":
-      return `The Tribonacci Numbers are:\n${res.sequence.join(", ")}`;
+      return (
+        `${divider}\n` +
+        `TRIBONACCI SEQUENCE:\n` +
+        `${res.sequence.join(", ")}\n` +
+        `${divider}\n` +
+        `TERMS GENERATED : ${res.sequence.length}\n` +
+        `${divider}`
+      );
 
     case "lucas":
-      return `The Lucas Numbers are:\n${res.sequence.join(", ")}`;
+      return (
+        `${divider}\n` +
+        `LUCAS SEQUENCE:\n` +
+        `${res.sequence.join(", ")}\n` +
+        `${divider}\n` +
+        `TERMS GENERATED : ${res.sequence.length}\n` +
+        `${divider}`
+      );
 
     default:
       return JSON.stringify(res);
@@ -236,47 +268,47 @@ function formatResult(topicId, res) {
 }
 
 // Section 7: All Compute Functions
-function computePalindrome(input) {
-  if (input.trim() === "") {
-    return { error: "You entered an empty string. Please try again." };
+function computePalindrome(str) {
+  if (!str || str.trim() === "") {
+    return { error: "INVALID: Input cannot be empty or whitespace" };
   }
 
-  const normalized = input.replace(/\s/g, "").toLowerCase();
-  const length = normalized.length;
+  // Remove spaces for display, length, and check
+  const strWithoutSpaces = str.replace(/\s+/g, "");
 
-  let isPalindrome = true;
-  for (let i = 0; i < Math.floor(length / 2); i++) {
-    if (normalized[i] !== normalized[length - 1 - i]) {
-      isPalindrome = false;
-      break;
-    }
-  }
+  const sanitized = strWithoutSpaces.toLowerCase();
+  const reversed = sanitized.split("").reverse().join("");
+  const isPalindrome = sanitized === reversed;
 
-  return { isPalindrome, normalized, length };
+  return {
+    isPalindrome,
+    str: strWithoutSpaces,
+    normalized: sanitized,
+    length: strWithoutSpaces.length,
+  };
 }
 
 function computeDivision(input1, input2) {
-  if (input1.trim() === "" || input2.trim() === "") {
-    return { error: "Please enter both integers." };
+  function validate(val, label) {
+    if (!val || val.trim() === "") return `INVALID: ${label} cannot be empty`;
+    if (val.includes(" ")) return `INVALID: ${label} cannot contain spaces`;
+    if (/[^0-9]/.test(val))
+      return `INVALID: ${label} must be a positive integer (no letters, decimals, or signs)`;
+    if (val.startsWith("0"))
+      return `INVALID: ${label} cannot be zero or have leading zeros`;
+    return null;
   }
+
+  const err1 = validate(input1, "First input");
+  if (err1) return { error: err1 };
+  const err2 = validate(input2, "Second input");
+  if (err2) return { error: err2 };
 
   const a = parseInt(input1);
   const b = parseInt(input2);
 
-  if (isNaN(a) || isNaN(b)) {
-    return { error: "Error: Please enter valid integers only." };
-  }
-
-  if (a < 0 || b < 0) {
-    return { error: "INVALID INPUT: Negative numbers are not allowed." };
-  }
-
-  if (a === 0 || b === 0) {
-    return { error: "Error: Integers cannot be zero." };
-  }
-
-  const m = Math.max(Math.abs(a), Math.abs(b));
-  const n = Math.min(Math.abs(a), Math.abs(b));
+  const m = Math.max(a, b);
+  const n = Math.min(a, b);
 
   const q = Math.floor(m / n);
   const r = m % n;
@@ -285,45 +317,45 @@ function computeDivision(input1, input2) {
 }
 
 function computeEuclidean(input1, input2) {
-  if (input1.trim() === "" || input2.trim() === "") {
-    return { error: "Please enter both integers." };
+  function validate(val, label) {
+    if (!val || val.trim() === "") return `INVALID: ${label} cannot be empty`;
+    if (val.includes(" ")) return `INVALID: ${label} cannot contain spaces`;
+    if (/[^0-9]/.test(val))
+      return `INVALID: ${label} must be a positive integer (no letters, decimals, or signs)`;
+    if (val.startsWith("0"))
+      return `INVALID: ${label} cannot be zero or have leading zeros`;
+    return null;
   }
 
-  const a = parseInt(input1);
-  const b = parseInt(input2);
+  const err1 = validate(input1, "First input");
+  if (err1) return { error: err1 };
+  const err2 = validate(input2, "Second input");
+  if (err2) return { error: err2 };
 
-  if (isNaN(a) || isNaN(b)) {
-    return { error: "Error: Please enter valid integers only." };
-  }
+  const val1 = parseInt(input1);
+  const val2 = parseInt(input2);
 
-  if (a === 0 || b === 0) {
-    return { error: "Error: Integers cannot be zero." };
-  }
-
-  let m = Math.max(Math.abs(a), Math.abs(b));
-  let n = Math.min(Math.abs(a), Math.abs(b));
+  let m = Math.max(val1, val2);
+  let n = Math.min(val1, val2);
 
   const originalM = m;
   const originalN = n;
   const steps = [];
   let gcd = n;
-  let dividend = m;
-  let divisor = n;
 
-  while (true) {
-    const quotient = Math.floor(dividend / divisor);
-    const remainder = dividend % divisor;
+  while (n !== 0) {
+    const q = Math.floor(m / n);
+    const r = m % n;
 
-    if (remainder === 0) {
-      steps.push(`${dividend} = ${divisor}(${quotient})`);
-      gcd = divisor;
-      break;
+    if (r === 0) {
+      steps.push(`${m} = ${n}(${q})`);
+      gcd = n;
     } else {
-      steps.push(`${dividend} = ${divisor}(${quotient}) + ${remainder}`);
+      steps.push(`${m} = ${n}(${q}) + ${r}`);
     }
 
-    dividend = divisor;
-    divisor = remainder;
+    m = n;
+    n = r;
   }
 
   const lcm = (originalM * originalN) / gcd;
@@ -331,18 +363,21 @@ function computeEuclidean(input1, input2) {
 }
 
 function computeCollatz(input) {
-  if (input.trim() === "") {
-    return { error: "INVALID INPUT: Empty value is not allowed." };
+  if (
+    !input ||
+    input.trim() === "" ||
+    input.includes(" ") ||
+    /[^0-9]/.test(input)
+  ) {
+    return { error: "INVALID OUTPUT" };
+  }
+  if (input.startsWith("0")) {
+    return { error: "INVALID OUTPUT" };
   }
 
   const n = parseInt(input);
-
-  if (isNaN(n) || !Number.isInteger(n)) {
-    return { error: "INVALID INPUT: Please enter a valid integer." };
-  }
-
-  if (n <= 0) {
-    return { error: "INVALID INPUT: Only positive numbers are allowed." };
+  if (n === 0 || n % 2 === 0) {
+    return { error: "INVALID OUTPUT" };
   }
 
   const sequence = [];
@@ -353,7 +388,7 @@ function computeCollatz(input) {
     if (current % 2 !== 0) {
       current = 3 * current + 1;
     } else {
-      current = Math.floor(current / 2);
+      current = current / 2;
     }
   }
   sequence.push(1);
@@ -362,70 +397,73 @@ function computeCollatz(input) {
 }
 
 function computeFibonacci(input) {
-  if (input.trim() === "") {
-    return { error: "Please enter a number." };
+  function validate(val) {
+    if (!val || val.trim() === "") return "INVALID: Input cannot be empty";
+    if (val.includes(" ")) return "INVALID: Input cannot contain spaces";
+    if (/[^0-9]/.test(val)) return "INVALID: Input must be a positive integer";
+    if (val.startsWith("0"))
+      return "INVALID: Input cannot be zero or have leading zeros";
+    const n = parseInt(val);
+    if (n <= 2) return "INVALID: Number of terms must be greater than 2";
+    return null;
   }
+
+  const err = validate(input);
+  if (err) return { error: err };
 
   const n = parseInt(input);
-
-  if (isNaN(n) || !Number.isInteger(n)) {
-    return { error: "Invalid input. Please enter a whole number." };
-  }
-
-  if (n <= 2) {
-    return { error: "Note: Number of terms must be greater than 2." };
-  }
-
   const seq = [0, 1];
   for (let i = 2; i < n; i++) {
     seq.push(seq[i - 1] + seq[i - 2]);
   }
 
-  return { sequence: seq, type: "Fibonacci Numbers" };
+  return { sequence: seq };
 }
 
 function computeTribonacci(input) {
-  if (input.trim() === "") {
-    return { error: "Please enter a number." };
+  function validate(val) {
+    if (!val || val.trim() === "") return "INVALID: Input cannot be empty";
+    if (val.includes(" ")) return "INVALID: Input cannot contain spaces";
+    if (/[^0-9]/.test(val)) return "INVALID: Input must be a positive integer";
+    if (val.startsWith("0"))
+      return "INVALID: Input cannot be zero or have leading zeros";
+    const n = parseInt(val);
+    if (n <= 3) return "INVALID: Number of terms must be greater than 3";
+    return null;
   }
+
+  const err = validate(input);
+  if (err) return { error: err };
 
   const n = parseInt(input);
-
-  if (isNaN(n) || !Number.isInteger(n)) {
-    return { error: "Invalid input. Please enter a whole number." };
-  }
-
-  if (n <= 3) {
-    return { error: "Note: Number of terms must be greater than 3." };
-  }
-
   const seq = [0, 0, 1];
   for (let i = 3; i < n; i++) {
     seq.push(seq[i - 1] + seq[i - 2] + seq[i - 3]);
   }
 
-  return { sequence: seq, type: "Tribonacci Numbers" };
+  return { sequence: seq };
 }
 
 function computeLucas(input) {
-  if (input.trim() === "") {
-    return { error: "Please enter a number." };
+  function validate(val) {
+    if (!val || val.trim() === "") return "INVALID: Input cannot be empty";
+    if (val.includes(" ")) return "INVALID: Input cannot contain spaces";
+    if (/[^0-9]/.test(val)) return "INVALID: Input must be a positive integer";
+    if (val.startsWith("0"))
+      return "INVALID: Input cannot be zero or have leading zeros";
+    const n = parseInt(val);
+    if (n <= 2) return "INVALID: Number of terms must be greater than 2";
+    return null;
   }
+
+  const err = validate(input);
+  if (err) return { error: err };
 
   const n = parseInt(input);
-
-  if (isNaN(n) || !Number.isInteger(n)) {
-    return { error: "Invalid input. Please enter a whole number." };
-  }
-
-  if (n <= 2) {
-    return { error: "Note: Number of terms must be greater than 2." };
-  }
-
   const seq = [2, 1];
   for (let i = 2; i < n; i++) {
     seq.push(seq[i - 1] + seq[i - 2]);
   }
 
-  return { sequence: seq, type: "Lucas Numbers" };
+  return { sequence: seq };
 }
